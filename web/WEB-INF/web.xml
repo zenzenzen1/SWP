@@ -6,7 +6,7 @@
     </servlet>
     <servlet>
         <servlet-name>SettingController</servlet-name>
-        <servlet-class>Controller.SettingController</servlet-class>
+        <servlet-class>Controller.Setting.SettingController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Test</servlet-name>

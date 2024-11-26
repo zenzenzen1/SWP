@@ -4,7 +4,9 @@
  */
 package Util;
 
+import Dao.SettingDao;
 import Model.Assignment;
+import Model.Milestone;
 import Model.Setting;
 import Model.Subject;
 import Model.SubjectCriteria;
@@ -39,21 +41,24 @@ public class HibernateUtil {
                 Configuration configuration = new Configuration();
                 Properties settings = new Properties();
                 settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/" + AppSetting.databaseName);
+                settings.put(Environment.URL, "jdbc:mysql://localhost:" + AppSetting.databasePort + "/" + AppSetting.databaseName);
                 settings.put(Environment.USER, AppSetting.databaseUserName);
                 settings.put(Environment.PASS, AppSetting.databasePassword);
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
                 settings.put(Environment.SHOW_SQL, "true");
                 settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-                settings.put(Environment.HBM2DDL_AUTO, "create-drop");
+//                settings.put(Environment.HBM2DDL_AUTO, "create-drop");
+                settings.put(Environment.HBM2DDL_AUTO, "update");
 
                 configuration.setProperties(settings);
+                
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(Setting.class);
                 configuration.addAnnotatedClass(Subject.class);
                 configuration.addAnnotatedClass(Assignment.class);
                 configuration.addAnnotatedClass(Model.Class.class);
                 configuration.addAnnotatedClass(SubjectCriteria.class);
+                configuration.addAnnotatedClass(Milestone.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();
@@ -77,18 +82,24 @@ public class HibernateUtil {
         try ( Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             try {
-                Setting setting = Setting.builder()
-                        .name("User Role")
-                        .build();
-                session.save(setting);
+                for(String name : AppSetting.systemSettingName ){
+                    if(new SettingDao().getSettingById(1) != null )
+                    {
+                        return;
+                    }
+                    Setting setting = Setting.builder()
+                            .name(name)
+                            .build();
+                    session.save(setting);
+                }
             } catch (Exception e) {
             }
 
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Setting> criteria = builder.createQuery(Setting.class);
             criteria.from(Setting.class);
-            List<Setting> products = session.createQuery(criteria).getResultList();
-            products.forEach((t) -> {
+            List<Setting> settings = session.createQuery(criteria).getResultList();
+            settings.forEach((t) -> {
                 System.out.println(t);
             });
 

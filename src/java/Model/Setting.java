@@ -32,7 +32,7 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 public class Setting implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int settingId;
     
     @Column(nullable = false, unique = true)
@@ -45,11 +45,14 @@ public class Setting implements Serializable {
     @Column(name = "\"value\"")
     private String value;
     
-    private int priority;
+    @Column(nullable = true)
+    @ColumnDefault("null")
+    private Integer priority;
     
     @Column(nullable = false)
     @ColumnDefault("true")
-    private boolean status;
+    @Builder.Default
+    private boolean status = true;
     
     private String description;
 
